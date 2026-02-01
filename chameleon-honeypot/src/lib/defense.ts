@@ -22,7 +22,7 @@ export async function evolveFirewallRule(specificLogStr?: string): Promise<{ suc
     try {
         // 1. Fetch the latest attack log
         // Use provided string if automated, or pop from Redis if polling
-        let logStr = specificLogStr
+        let logStr: string | null | undefined = specificLogStr
 
         if (!logStr) {
             // lpop: Remove and return the FIRST element (HEAD) of the list. 
