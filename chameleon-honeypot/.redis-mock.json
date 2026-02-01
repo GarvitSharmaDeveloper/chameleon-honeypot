@@ -1,5 +1,7 @@
 {
   "attack:logs": [
+    "{\"timestamp\":1769943616789,\"command\":\"<script>alert('pwned')</script>\",\"ip\":\"::1\"}",
+    "{\"timestamp\":1769943573706,\"command\":\"ADMIN' OR '1'='1' --\",\"ip\":\"::1\"}",
     "{\"timestamp\":1769941981932,\"command\":\"AUTH_ATTEMPT user='admin' pass='password'\",\"ip\":\"::1\"}"
   ]
 }
