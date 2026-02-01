@@ -8,7 +8,13 @@ export async function GET() {
 
         // Parse patches if they are JSON strings
         const formattedPatches = patches.map(p => {
-            try { return JSON.parse(p) } catch { return { trigger: 'Unknown', patch: p } }
+            if (typeof p === 'object' && p !== null) return p;
+            try {
+                const parsed = JSON.parse(p);
+                return (typeof parsed === 'object' && parsed !== null) ? parsed : { trigger: 'Unknown', patch: p };
+            } catch {
+                return { trigger: 'Unknown', patch: p }
+            }
         })
 
         // Check Dummy App Status

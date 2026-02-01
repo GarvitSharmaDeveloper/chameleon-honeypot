@@ -120,25 +120,28 @@ export default function AdminPage() {
         const totalBuckets = 30; // 5 minutes history
 
         // Initialize with real data buckets
-        const buckets = Array.from({ length: totalBuckets }, (_, i) => ({
-            time: new Date(now - (totalBuckets - 1 - i) * bucketSize).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-            trapped: 0,
-            blocked: 0,
-            isSimulated: false
-        }))
+        const buckets: any[] = [];
+        for (let i = 0; i < totalBuckets; i++) {
+            buckets.push({
+                time: new Date(now - (totalBuckets - 1 - i) * bucketSize).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                trapped: 0,
+                blocked: 0,
+                isSimulated: false
+            })
+        }
 
         // Populate with Real Logs
-        logs.trapped.forEach(log => {
+        ; (logs.trapped || []).forEach((log: any) => {
             const age = now - log.timestamp
             const idx = (totalBuckets - 1) - Math.floor(age / bucketSize)
             if (idx >= 0 && idx < totalBuckets) buckets[idx].trapped++
         })
 
-        logs.blocked.forEach(log => {
-            const age = now - log.timestamp
-            const idx = (totalBuckets - 1) - Math.floor(age / bucketSize)
-            if (idx >= 0 && idx < totalBuckets) buckets[idx].blocked++
-        })
+            ; (logs.blocked || []).forEach((log: any) => {
+                const age = now - log.timestamp
+                const idx = (totalBuckets - 1) - Math.floor(age / bucketSize)
+                if (idx >= 0 && idx < totalBuckets) buckets[idx].blocked++
+            })
 
         return buckets;
     }
@@ -147,8 +150,8 @@ export default function AdminPage() {
     // 2. Threat Distribution (Pie Chart for IPs)
     // 2. Threat Distribution (Pie Chart for Risk)
     const getDistributionData = () => {
-        const trappedCount = logs.trapped.length;
-        const blockedCount = logs.blocked.length;
+        const trappedCount = (logs.trapped || []).length;
+        const blockedCount = (logs.blocked || []).length;
 
         if (trappedCount === 0 && blockedCount === 0) {
             return [{ name: 'No Threats', value: 1 }];
@@ -259,14 +262,14 @@ export default function AdminPage() {
                                             const counts: Record<string, { trapped: number, blocked: number }> = {};
 
                                             // Process Trapped
-                                            logs.trapped.forEach(l => {
+                                            (logs.trapped || []).forEach(l => {
                                                 const cmd = l.command.length > 15 ? l.command.substring(0, 12) + '...' : l.command;
                                                 if (!counts[cmd]) counts[cmd] = { trapped: 0, blocked: 0 };
                                                 counts[cmd].trapped++;
                                             });
 
                                             // Process Blocked
-                                            logs.blocked.forEach(l => {
+                                            (logs.blocked || []).forEach(l => {
                                                 const cmd = l.command.length > 15 ? l.command.substring(0, 12) + '...' : l.command;
                                                 if (!counts[cmd]) counts[cmd] = { trapped: 0, blocked: 0 };
                                                 counts[cmd].blocked++;
