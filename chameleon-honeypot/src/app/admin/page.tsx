@@ -19,14 +19,16 @@ import {
     PieChart,
     Pie,
     Cell,
-    Legend,
-    BarChart,
-    Bar,
     RadarChart,
     PolarGrid,
     PolarAngleAxis,
     PolarRadiusAxis,
-    Radar
+    Radar,
+    AreaChart,
+    Area,
+    BarChart,
+    Bar,
+    Legend
 } from 'recharts'
 
 export default function AdminPage() {
@@ -46,6 +48,8 @@ export default function AdminPage() {
     const [dbLogs, setDbLogs] = useState<any[]>([])
 
     // Poll for real data
+    const [evolutionData, setEvolutionData] = useState<{ time: string, score: number }[]>([])
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -53,6 +57,18 @@ export default function AdminPage() {
                 const statsRes = await fetch('/api/stats', { cache: 'no-store' })
                 const statsData = await statsRes.json()
                 setRealStats(statsData)
+
+                // Update Evolution Graph
+                setEvolutionData(prev => {
+                    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                    // Score = Rules * 10 + Blocked Attacks (Composite Learning Score)
+                    const score = (statsData.rules * 10) + statsData.blocked
+
+                    // Keep last 20 points
+                    const newData = [...prev, { time: now, score }]
+                    if (newData.length > 20) return newData.slice(newData.length - 20)
+                    return newData
+                })
 
                 // Fetch Logs
                 const logsRes = await fetch('/api/logs', { cache: 'no-store' })
@@ -211,6 +227,95 @@ export default function AdminPage() {
 
                 {/* ... Existing Logs ... */}
 
+
+                {/* EVOLUTION TIMELINE - SELF IMPROVEMENT */}
+                <Card className="mb-6 bg-slate-900/80 border-blue-900/30 backdrop-blur-sm relative z-10 shadow-xl overflow-hidden">
+                    <div className="absolute inset-0 bg-blue-500/5 z-0"></div>
+                    <CardHeader className="border-b border-blue-900/20 py-3 bg-blue-950/10 relative z-10">
+                        <CardTitle className="flex items-center gap-2 text-sm text-emerald-400 tracking-widest">
+                            <Activity className="w-4 h-4" /> ADAPTIVE EVOLUTION: DEFENSE GROWTH
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 relative z-10">
+                        <div className="h-[250px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={evolutionData}>
+                                    <defs>
+                                        <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                                    <XAxis dataKey="time" stroke="#475569" fontSize={10} tick={{ fill: '#64748b' }} />
+                                    <YAxis stroke="#475569" fontSize={10} tick={{ fill: '#64748b' }} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#10b981', color: '#e2e8f0', borderRadius: '4px' }}
+                                        itemStyle={{ color: '#34d399' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="score"
+                                        stroke="#10b981"
+                                        fillOpacity={1}
+                                        fill="url(#colorScore)"
+                                        isAnimationActive={true}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="text-center mt-2">
+                            <p className="text-[10px] text-emerald-600/60 uppercase tracking-widest animate-pulse">
+                                System is actively learning from new threats...
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* THREAT MITIGATION VELOCITY */}
+                <Card className="mb-6 bg-slate-900/80 border-blue-900/30 backdrop-blur-sm relative z-10 shadow-xl overflow-hidden">
+                    <div className="absolute inset-0 bg-red-500/5 z-0"></div>
+                    <CardHeader className="border-b border-blue-900/20 py-3 bg-blue-950/10 relative z-10">
+                        <CardTitle className="flex items-center gap-2 text-sm text-red-400 tracking-widest">
+                            <ShieldAlert className="w-4 h-4" /> MITIGATION VELOCITY: THREAT INTERCEPTION
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 relative z-10">
+                        <div className="h-[250px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={evolutionData}>
+                                    <defs>
+                                        <linearGradient id="colorBlocked" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                                    <XAxis dataKey="time" stroke="#475569" fontSize={10} tick={{ fill: '#64748b' }} />
+                                    <YAxis stroke="#475569" fontSize={10} tick={{ fill: '#64748b' }} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#ef4444', color: '#e2e8f0', borderRadius: '4px' }}
+                                        itemStyle={{ color: '#f87171' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="score"
+                                        name="Mitigation Efficiency"
+                                        stroke="#ef4444"
+                                        fillOpacity={1}
+                                        fill="url(#colorBlocked)"
+                                        isAnimationActive={true}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="text-center mt-2">
+                            <p className="text-[10px] text-red-600/60 uppercase tracking-widest animate-pulse">
+                                Intercepting hostile signatures in real-time...
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* STATS ROW */}
                 <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
