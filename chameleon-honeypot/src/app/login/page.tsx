@@ -1,24 +1,59 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Toaster, toast } from 'sonner'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Shield, Eye, EyeOff } from 'lucide-react'
+import { Shield, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
+    const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+
+    // Lockout State
+    const [failCount, setFailCount] = useState(0)
+    const [lockoutUntil, setLockoutUntil] = useState<number | null>(null)
+    const [timeLeft, setTimeLeft] = useState(0)
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        // Check if locked out
+        if (lockoutUntil && Date.now() < lockoutUntil) {
+            const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000)
+            toast.error("TEMPORARY LOCKOUT", {
+                description: `Too many failed attempts. Try again in ${remaining}s.`,
+                style: { background: '#fef2f2', color: '#991b1b', border: '1px solid #f87171' }
+            })
+            return
+        }
+
         setLoading(true)
 
         try {
-            // Send credentials to Honeypot API
+            // Check for hardcoded credentials
+            if (username === 'admin' && password === 'password') {
+                setFailCount(0)
+                setLockoutUntil(null)
+
+                toast.success("ACCESS GRANTED", {
+                    description: "Welcome, Administrator.",
+                    style: { background: '#f0fdf4', color: '#166534', border: '1px solid #86efac' }
+                })
+                await new Promise(r => setTimeout(r, 800))
+                router.push('/admin')
+                return
+            }
+
+            // Send credentials to Honeypot API (Log attempted hack)
             const command = `AUTH_ATTEMPT user='${username}' pass='${password}'`
             await fetch('/api/honeypot', {
                 method: 'POST',
@@ -29,10 +64,25 @@ export default function LoginPage() {
             // Simulate real login delay
             await new Promise(r => setTimeout(r, 1500))
 
-            toast.error("ACCESS DENIED", {
-                description: "Invalid credentials. Incident reported.",
-                style: { background: '#450a0a', color: '#f87171', border: '1px solid #b91c1c' }
-            })
+            // Update failure tracking
+            const newFailCount = failCount + 1
+            setFailCount(newFailCount)
+
+            if (newFailCount >= 3) {
+                const until = Date.now() + 30000
+                setLockoutUntil(until)
+                setFailCount(0) // Reset counter for next cycle after lockout
+
+                toast.error("USER BLOCKED", {
+                    description: "3 failed attempts detected. System locked for 30s.",
+                    style: { background: '#450a0a', color: '#f87171', border: '1px solid #b91c1c' }
+                })
+            } else {
+                toast.error("ACCESS DENIED", {
+                    description: `Invalid credentials. Attempt ${newFailCount}/3.`,
+                    style: { background: '#fef2f2', color: '#991b1b', border: '1px solid #f87171' }
+                })
+            }
         } catch (error) {
             console.error(error)
         }
@@ -40,66 +90,59 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white flex flex-col">
-            <Toaster position="top-center" theme="dark" />
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
+            <Toaster position="top-center" theme="light" />
 
-            <div className="flex-1 flex flex-col bg-slate-50">
-                <div className="border-b border-slate-200 bg-white p-4">
-                    <h1 className="text-slate-800 flex items-center gap-2 text-sm font-sans font-medium">
-                        <Shield className="w-4 h-4 text-blue-600" /> Administrative Portal (Legacy)
-                    </h1>
-                </div>
-
-                <div className="flex-1 flex items-center justify-center p-4">
-                    <Card className="w-full max-w-2xl bg-white border-slate-200 shadow-xl overflow-hidden">
-                        <CardContent className="p-12">
-                            <div className="space-y-8 border border-slate-200 p-8 rounded bg-white shadow-sm">
-                                <h3 className="text-center text-slate-800 font-sans text-2xl font-semibold border-b border-slate-100 pb-4">Login Required</h3>
-
-                                <form onSubmit={handleLogin} className="space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm text-slate-600 uppercase font-bold tracking-wider">Username</label>
-                                        <Input
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
-                                            placeholder="Enter username"
-                                            className="h-14 text-lg bg-slate-50 border-slate-300 text-slate-800 placeholder:text-slate-400 focus-visible:ring-blue-500"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="text-sm text-slate-600 uppercase font-bold tracking-wider">Password</label>
-                                        <div className="relative">
-                                            <Input
-                                                type={showPassword ? "text" : "password"}
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                                placeholder="Enter password"
-                                                className="h-14 text-lg bg-slate-50 border-slate-300 text-slate-800 placeholder:text-slate-400 focus-visible:ring-blue-500 pr-12"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 focus:outline-none"
-                                            >
-                                                {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700 text-white font-sans font-bold shadow-md hover:shadow-lg transition-all"
-                                    >
-                                        {loading ? "Signing In..." : "Sign In"}
-                                    </Button>
-                                </form>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+            <div className="absolute top-0 left-0 right-0 p-4 border-b border-slate-100 bg-white flex items-center gap-3">
+                <Shield className="w-5 h-5 text-blue-600" />
+                <span className="text-sm font-semibold text-slate-800">Administrative Portal (Legacy)</span>
             </div>
+
+            <Card className="w-full max-w-sm bg-white border border-slate-200 shadow-sm rounded-md overflow-hidden">
+                <CardContent className="p-8">
+                    <h3 className="text-center text-slate-700 text-xl font-medium mb-8">Login Required</h3>
+
+                    <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Username</label>
+                            <Input
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus-visible:ring-blue-500 h-10 rounded-sm"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Password</label>
+                            <div className="relative">
+                                <Input
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="************"
+                                    className="bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus-visible:ring-blue-500 h-10 rounded-sm pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                                >
+                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-11 transition-all rounded-md shadow-sm"
+                        >
+                            {loading ? "Signing In..." : "Sign In"}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     )
 }
+

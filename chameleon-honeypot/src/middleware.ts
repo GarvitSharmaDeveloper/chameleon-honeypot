@@ -23,8 +23,15 @@ export async function middleware(request: NextRequest) {
     try {
         const url = request.url
 
-        // Filter out noise
-        if (url.includes('/api/rules') || url.includes('favicon.ico')) return NextResponse.next()
+        // Filter out noise and allow Admin APIs + Page
+        if (
+            url.includes('/api/rules') ||
+            url.includes('/api/logs') ||
+            url.includes('/api/stats') ||
+            url.includes('/api/admin') ||
+            url.includes('/admin') ||
+            url.includes('favicon.ico')
+        ) return NextResponse.next()
 
         // Decode URL components AND replace '+' with spaces (common WAF bypass issue)
         const decodedUrl = decodeURIComponent(url).replace(/\+/g, ' ')

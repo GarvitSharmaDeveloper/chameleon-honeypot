@@ -100,10 +100,10 @@ export async function evolveFirewallRule(specificLogStr?: string): Promise<{ suc
         }
 
         // 3. Store the new rule
-        // DISABLING LIVE FIREWALL UPDATE for Self-Healing Demo to prevent blocking Admin/User traffic.
-        // We only want to demonstrate the Code Patching on the dummy file.
-        // if (regexStr) await redis.lpush('firewall:rules', regexStr)
-        if (regexStr) console.log(`Example Rule Generated (Not Applied): ${regexStr}`)
+        if (regexStr) {
+            await redis.lpush('firewall:rules', regexStr)
+            console.log(`Example Rule Generated (Not Applied): ${regexStr}`)
+        }
 
         // 4. Apply Code Patch (Self-Healing)
         let patchApplied = false
@@ -117,7 +117,7 @@ export async function evolveFirewallRule(specificLogStr?: string): Promise<{ suc
                 // Log patch event?
                 await redis.lpush('patch:history', JSON.stringify({
                     timestamp: Date.now(),
-                    trigger: attackCommand,
+                    trigger: attackCommand || 'Unknown Attack',
                     patch: codePatch
                 }))
 
