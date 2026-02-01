@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Toaster, toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -8,8 +9,9 @@ import { Input } from '@/components/ui/input'
 import { Shield, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
+    const router = useRouter()
     const [loading, setLoading] = useState(false)
-    const [username, setUsername] = useState('; cat /etc/passwd')
+    const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
 
@@ -18,7 +20,18 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            // Send credentials to Honeypot API
+            // Check for hardcoded credentials
+            if (username === 'admin' && password === 'password') {
+                toast.success("ACCESS GRANTED", {
+                    description: "Welcome, Administrator.",
+                    style: { background: '#f0fdf4', color: '#166534', border: '1px solid #86efac' }
+                })
+                await new Promise(r => setTimeout(r, 800))
+                router.push('/admin')
+                return
+            }
+
+            // Send credentials to Honeypot API (Log attempted hack)
             const command = `AUTH_ATTEMPT user='${username}' pass='${password}'`
             await fetch('/api/honeypot', {
                 method: 'POST',
