@@ -1,0 +1,33 @@
+
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .bg { fill: #1e293b; }
+    .title { fill: #e2e8f0; font-family: monospace; font-size: 24px; font-weight: bold; text-anchor: middle; }
+    .subtitle { fill: #94a3b8; font-family: monospace; font-size: 14px; text-anchor: middle; }
+    .label { fill: #94a3b8; font-family: monospace; font-size: 14px; }
+    .value { fill: #22c55e; font-family: monospace; font-size: 14px; font-weight: bold; }
+    .critical { fill: #ef4444; }
+    .border { fill: none; stroke: #334155; stroke-width: 2; }
+    .footer { fill: #64748b; font-family: monospace; font-size: 10px; text-anchor: middle; }
+  </style>
+  <rect x="0" y="0" width="600" height="400" class="bg" />
+  <rect x="10" y="10" width="580" height="380" class="border" />
+  
+  <text x="300" y="50" class="title">CHAMELEON SECURITY</text>
+  <text x="300" y="75" class="subtitle">INCIDENT REPORT (OFFLINE MODE)</text>
+  
+  <text x="50" y="130" class="label">TIMESTAMP:</text>
+  <text x="180" y="130" class="value">2026-02-01 03:37:25</text>
+  
+  <text x="50" y="160" class="label">IP ADDRESS:</text>
+  <text x="180" y="160" class="value">::1</text>
+  
+  <text x="50" y="190" class="label">SEVERITY:</text>
+  <text x="180" y="190" class="value ">HIGH</text>
+  
+  <text x="50" y="220" class="label">COMMAND:</text>
+  <text x="50" y="240" class="value" width="500">SELECT * FROM users WHERE admin = 1</text>
+
+  <text x="300" y="320" class="footer">Evidence captured locally due to cloud connection timeout.</text>
+  <text x="300" y="340" class="footer">Browserbase Secure Isolation currently unreachable.</text>
+</svg>
