@@ -50,7 +50,7 @@ export default function LoginPage() {
                 return
             }
 
-            // Send credentials to Honeypot API (Log attempted hack)
+            // Send credentials to Honeyppot API (Log attempted hack)
             const command = `AUTH_ATTEMPT user='${username}' pass='${password}'`
             await fetch('/api/honeypot', {
                 method: 'POST',
