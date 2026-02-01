@@ -2,15 +2,16 @@
 
 import { useState } from 'react'
 import { Toaster, toast } from 'sonner'
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ShieldCheck, User, Lock, Terminal } from 'lucide-react'
+import { Shield, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -39,62 +40,66 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-4 relative font-mono text-green-500">
-            {/* Matrix Background */}
-            <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-
+        <div className="min-h-screen bg-white flex flex-col">
             <Toaster position="top-center" theme="dark" />
 
-            <Card className="w-full max-w-md bg-black border-2 border-green-800 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-                <CardHeader className="text-center space-y-2 border-b border-green-900 pb-6 bg-green-950/20">
-                    <div className="mx-auto w-12 h-12 bg-green-900/20 rounded border border-green-700 flex items-center justify-center mb-2">
-                        <Terminal className="w-6 h-6 text-green-500" />
-                    </div>
-                    <CardTitle className="text-xl font-bold tracking-widest text-green-400 uppercase">
-            // OPS_COMMAND_LOGIN
-                    </CardTitle>
-                    <p className="text-xs text-green-700 uppercase">Restricted Area // Class 4 Clearance</p>
-                </CardHeader>
-                <CardContent className="space-y-4 pt-6">
-                    <form onSubmit={handleLogin} className="space-y-4">
-                        <div className="space-y-2">
-                            <label className="text-xs uppercase font-bold text-green-700 ml-1">UID</label>
-                            <div className="relative">
-                                <User className="absolute left-3 top-2.5 h-4 w-4 text-green-800" />
-                                <Input
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="USER_ID"
-                                    className="pl-9 bg-black border-green-800 text-green-400 placeholder:text-green-900 focus:border-green-500 focus:ring-green-900 h-10 font-mono"
-                                />
+            <div className="flex-1 flex flex-col bg-slate-50">
+                <div className="border-b border-slate-200 bg-white p-4">
+                    <h1 className="text-slate-800 flex items-center gap-2 text-sm font-sans font-medium">
+                        <Shield className="w-4 h-4 text-blue-600" /> Administrative Portal (Legacy)
+                    </h1>
+                </div>
+
+                <div className="flex-1 flex items-center justify-center p-4">
+                    <Card className="w-full max-w-2xl bg-white border-slate-200 shadow-xl overflow-hidden">
+                        <CardContent className="p-12">
+                            <div className="space-y-8 border border-slate-200 p-8 rounded bg-white shadow-sm">
+                                <h3 className="text-center text-slate-800 font-sans text-2xl font-semibold border-b border-slate-100 pb-4">Login Required</h3>
+
+                                <form onSubmit={handleLogin} className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm text-slate-600 uppercase font-bold tracking-wider">Username</label>
+                                        <Input
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            placeholder="Enter username"
+                                            className="h-14 text-lg bg-slate-50 border-slate-300 text-slate-800 placeholder:text-slate-400 focus-visible:ring-blue-500"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm text-slate-600 uppercase font-bold tracking-wider">Password</label>
+                                        <div className="relative">
+                                            <Input
+                                                type={showPassword ? "text" : "password"}
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                placeholder="Enter password"
+                                                className="h-14 text-lg bg-slate-50 border-slate-300 text-slate-800 placeholder:text-slate-400 focus-visible:ring-blue-500 pr-12"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 focus:outline-none"
+                                            >
+                                                {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700 text-white font-sans font-bold shadow-md hover:shadow-lg transition-all"
+                                    >
+                                        {loading ? "Signing In..." : "Sign In"}
+                                    </Button>
+                                </form>
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs uppercase font-bold text-green-700 ml-1">ACCESS KEY</label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-green-800" />
-                                <Input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="************"
-                                    className="pl-9 bg-black border-green-800 text-green-400 placeholder:text-green-900 focus:border-green-500 focus:ring-green-900 h-10 font-mono"
-                                />
-                            </div>
-                        </div>
-                        <Button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-green-900/30 hover:bg-green-800/50 text-green-400 font-bold border border-green-600 h-11 hover:text-green-200 transition-all rounded"
-                        >
-                            {loading ? "VERIFYING..." : "INITIATE_SESSION"}
-                        </Button>
-                    </form>
-                </CardContent>
-                <CardFooter className="justify-center border-t border-green-900 pt-4 bg-green-950/10">
-                    <p className="text-[10px] text-green-800 font-mono">SECURE RELAY NODE: 192.168.0.X</p>
-                </CardFooter>
-            </Card>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
         </div>
     )
 }

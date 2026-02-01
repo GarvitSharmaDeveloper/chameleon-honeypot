@@ -12,7 +12,7 @@ export const config = {
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
          */
-        '/((?!api/honeypot|api/evolve|_next/static|_next/image|favicon.ico).*)',
+        '/((?!api/honeypot|api/evolve|api/mock-store|_next/static|_next/image|favicon.ico).*)',
     ],
 }
 

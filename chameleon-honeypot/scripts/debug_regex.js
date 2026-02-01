@@ -2,7 +2,7 @@ const { Redis } = require("@upstash/redis");
 const path = require('path');
 const fs = require('fs');
 
-// Load env
+// Load envdd
 const envPath = path.resolve(__dirname, '../.env.local');
 const envConfig = require('dotenv').parse(fs.readFileSync(envPath));
 

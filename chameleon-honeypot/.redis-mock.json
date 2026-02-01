@@ -1,0 +1,5 @@
+{
+  "attack:logs": [
+    "{\"timestamp\":1769941981932,\"command\":\"AUTH_ATTEMPT user='admin' pass='password'\",\"ip\":\"::1\"}"
+  ]
+}
