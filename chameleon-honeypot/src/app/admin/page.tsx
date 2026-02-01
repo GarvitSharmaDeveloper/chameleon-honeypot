@@ -186,7 +186,7 @@ export default function AdminPage() {
                         <h1 className="text-3xl font-extrabold text-blue-400 tracking-tighter flex items-center gap-2">
                             SYSTEM ADMIN: S-CLASS
                         </h1>
-                        <p className="text-blue-600/60 text-sm tracking-[0.2em] uppercase font-bold mt-1">Shadow Monarch Access // UNRESTRICTED</p>
+                        <p className="text-blue-600/60 text-sm tracking-[0.2em] uppercase font-bold mt-1">Chameleon of the Dungeons</p>
                     </div>
                 </div>
                 <div className="flex gap-6 items-center">
