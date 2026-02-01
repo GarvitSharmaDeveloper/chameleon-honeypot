@@ -731,7 +731,10 @@ export default function AdminPage() {
                             {/* Header */}
                             <div className="bg-red-950/20 border-b border-red-900/30 p-3 flex justify-between items-center relative z-10">
                                 <div className="flex items-center gap-2 text-red-500 font-bold text-sm tracking-widest">
-                                    <Skull className="w-4 h-4" /> IGRIS COMMAND
+                                    <div className="w-5 h-5 relative">
+                                        <img src="/arise-icon.png" alt="ARISE" className="w-full h-full object-contain brightness-125 contrast-125" />
+                                    </div>
+                                    ARISE COMMAND
                                 </div>
                                 <div className="flex items-center gap-2">
                                     {/* Summarize Attack Button */}
